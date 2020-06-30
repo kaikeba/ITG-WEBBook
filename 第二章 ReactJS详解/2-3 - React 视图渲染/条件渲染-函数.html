@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>React</title>
+    <script src="js/react.js"></script>
+    <script src="js/react-dom.js"></script>
+    <script src="js/babel.js"></script>
+</head>
+<body>
+<div id="root">
+</div>
+<script type="text/babel">
+function setAge(age){
+    if(age < 12){
+        return <p>儿童</p>
+    } else if(age < 18){
+        return <p>少年</p>
+    } else if(age < 30){
+        return <p>青年</p>
+    } else if(age < 50){
+        return <p>壮年</p>
+    } 
+    return <p>老年</p>
+}
+ReactDOM.render(
+	<div>{setAge(18)}</div>,
+	document.getElementById("root")
+);
+</script>  
+</body>
+</html>

@@ -1,0 +1,24 @@
+
+dl,
+dd {
+    margin: 0;
+}
+.friend-list {
+    border: 1px solid #000000;
+    width: 200px;
+}
+.friend-group dt {
+    padding: 10px;
+    background-color:#eee;
+    font-weight: bold;
+}
+.friend-group dd {
+    padding: 10px;
+    display: none;
+}
+.friend-group.expanded dd {
+    display: block;
+}
+.friend-group dd.checked {
+    background: green;
+}

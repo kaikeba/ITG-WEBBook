@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<button id="btn">添加一条新留言</button>
+<ul id="list">
+    <li>默认留言-1</li>
+    <li>默认留言-2</li>
+</ul>
+<script>
+{
+    let btn = document.querySelector("#btn");
+    let list = document.querySelector("#list");
+    btn.onclick = function(){
+        // 获取新留言
+        let newMessage = "新的留言";
+        let newLi = document.createElement("li");
+        newLi.innerHTML = newMessage;
+        list.appendChild(newLi);
+    };
+}    
+</script>  
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>React</title>
+    <script src="js/react.js"></script>
+    <script src="js/react-dom.js"></script>
+    <script src="js/babel.js"></script>
+</head>
+<body>
+<div id="root">
+</div>
+<script type="text/babel"> 
+let arr = [
+    "选项1",
+    "选项2",
+    "选项3"
+];
+ReactDOM.render(
+	<div>{arr}</div>,
+	document.getElementById("root")
+);
+</script>  
+</body>
+</html>

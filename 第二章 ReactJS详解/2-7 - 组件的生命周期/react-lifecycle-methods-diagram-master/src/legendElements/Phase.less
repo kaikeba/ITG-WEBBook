@@ -1,0 +1,20 @@
+.Phase {
+  margin-top: -10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+
+  &:not(&--last) {
+    border-bottom: 2px dotted black;
+  }
+
+  h3 {
+    font-weight: 400;
+  }
+
+  p {
+    max-width: 10em;
+    margin: 5px auto 10px auto;
+  }
+}

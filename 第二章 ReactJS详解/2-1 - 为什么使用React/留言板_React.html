@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/react.js"></script>
+    <script src="js/react-dom.js"></script>
+    <script src="js/babel.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel"> 
+console.dir(ReactDOM);
+function Message(){
+    let [messageData,setData] = React.useState([{
+            id: 1,
+            message: "默认留言-1"
+        },{
+            id: 2,
+            message: "默认留言-2"
+        }]);
+    return <div>
+        <button 
+            id="btn"
+            onClick={()=>{
+                messageData.push({
+                    id: Date.now(),
+                    message: "新的留言"
+                });
+                setData([...messageData]);
+            }}
+        >添加一条新留言</button>
+        <ul id="list">
+            {
+                messageData.map(itemData=>{
+                    return <li key={itemData.id}>{itemData.message}</li>
+                }) 
+            }
+        </ul>
+    </div>
+}
+ReactDOM.render(
+    <Message />,
+    document.querySelector("#root")
+)
+</script>  
+</body>
+</html>

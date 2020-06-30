@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>React</title>
+    <script src="js/react.js"></script>
+    <script src="js/react-dom.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script> 
+ReactDOM.render(
+    "Hello React",
+    document.querySelector("#root"),
+    ()=>{
+        console.log("渲染完成了");
+    }
+);
+setTimeout(()=>{
+    ReactDOM.unmountComponentAtNode(document.querySelector("#root"));
+},3000);
+</script>  
+</body>
+</html>
