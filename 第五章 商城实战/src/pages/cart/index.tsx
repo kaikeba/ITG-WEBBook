@@ -1,91 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import { connect, Dispatch, CartModelState } from 'umi';
-import { ConnectState } from '@/models/connect';
+import React, { Component } from 'react';
 import styles from './index.less';
-import List from './List';
+import { query } from '@/services/cart';
+import { CartProductType } from '@/@types/Product';
+import List, { UpdateProductType } from './List';
 import PayBar from './PayBar';
-import { ProductListType, ProductType } from 'types/Product';
+import { connect, history } from 'umi';
+import { ConnectProps, ConnectState } from '@/models/connect';
+import { editCart } from '@/services/editCart';
 
-interface onChangeProps {
-  id: string;
-  count?: number;
-  checked?: boolean;
-}
-export interface CartProps {
-  dispatch: Dispatch;
-  cart: CartModelState;
+interface CartState {
+  data: CartProductType[];
 }
 
-export interface CartPropsForChild {
-  list: ProductListType;
-  checkedAll: boolean;
-  totalPrice: number;
-  count: number;
-}
+class Cart extends Component<ConnectProps, CartState> {
+  state: CartState = { data: [] };
 
-class Cart extends React.Component<CartProps> {
   componentDidMount() {
-    this.props.dispatch({
-      type: 'cart/query',
+    query().then(res => {
+      this.setState({ data: res.list.data });
     });
   }
 
-  compute = (list: ProductListType): CartPropsForChild => {
-    let checkedCount = 0;
-    let totalPrice = 0;
-    let count: number = 0;
-    for (let i = 0; i < list.data.length; i++) {
-      let item: ProductType = list.data[i];
-      item.checked && checkedCount++;
-      if (item.checked) {
-        totalPrice += item.price * item.count;
-        count += item.count;
-      }
+  updateProduct = (newState: UpdateProductType) => {
+    const { id, index, count, checked } = newState;
+    let data = [...this.state.data];
+    if (count === 0) {
+      data.splice(index, 1);
+    } else {
+      Object.assign(data[index], newState);
     }
-    return {
-      list,
-      checkedAll: checkedCount === list.data.length,
-      totalPrice,
-      count,
-    };
-  };
 
-  getNewList = (tar: onChangeProps): ProductListType => {
-    let newList: ProductListType = { data: [] };
-    newList.data = this.props.cart.list.data.concat([]);
-    for (let i = 0; i < newList.data.length; i++) {
-      let item = newList.data[i];
-      if (typeof tar.id !== 'string') {
-        item.checked = tar.checked;
-      }
-      if (typeof tar.id === 'string' && tar.id === item.id) {
-        newList.data[i] = { ...item, ...tar };
-        break;
-      }
-    }
-    return newList;
-  };
-
-  onChange = (tar: onChangeProps): void => {
-    const { dispatch } = this.props;
-    let newList = this.getNewList(tar);
-    dispatch({
-      type: 'cart/editCart',
-      payload: { list: newList },
+    editCart({ id, count }).then(res => {
+      this.setState({ data });
     });
   };
+
+  checkedAllChange = (allChecked: boolean) => {
+    let data = [...this.state.data];
+    data.every(item => (item.checked = allChecked));
+    this.setState({ data });
+  };
+
+  goPay = () => {
+    const { data } = this.state;
+    const checkedData = data.filter(item => item.checked);
+    this.props.dispatch({
+      type: 'cart/saveCart',
+      payload: { data: checkedData },
+    });
+    history.push('/confirmBill');
+  };
+
   render() {
-    const { list } = this.props.cart;
-    const other = this.compute(list);
+    const { data } = this.state;
     return (
       <div className={styles.main}>
-        <List onChange={this.onChange} list={list} />
-        <PayBar list={list} {...other} onChange={this.onChange} />
+        <List data={data} updateProduct={this.updateProduct} />
+        <PayBar
+          data={data}
+          checkedAllChange={this.checkedAllChange}
+          goPay={this.goPay}
+        />
       </div>
     );
   }
 }
 
-export default connect(({ cart }: ConnectState) => ({
-  cart,
-}))(Cart);
+export default connect(({ cart }: ConnectState) => ({ cart }))(Cart);

@@ -1,26 +1,27 @@
-import React from 'react';
-import { ProductListType, ProductType } from 'types/Product';
-import { WingBlank, Grid, Card } from 'antd-mobile';
-import styles from './index.less';
+import React, { useEffect, useState } from 'react';
+import { queryRecommend } from '@/services/home';
+import { WingBlank, Card, Grid } from 'antd-mobile';
 import { Link } from 'umi';
+import { DataItem } from 'antd-mobile/lib/grid/PropsType';
+import styles from './index.less';
 
-const node = ({ id, img, title }: ProductType) => {
+function node({ id, title, img }: DataItem) {
   return (
-    <Link className={styles.node} to={'/product/' + id}>
+    <Link to={'/product/' + id}>
       <div className="oneRow">{title}</div>
-      <img className={styles.nodeImg} src={img} />
+      <img src={img} alt="" className={styles.nodeImg} />
     </Link>
   );
-};
-
-interface RecommendProps {
-  list: ProductListType;
 }
 
-const Recommend: React.FC<RecommendProps> = ({ list }) => {
-  const data1 = Array.from(new Array(9)).map(() => ({
-    icon: 'https://gw.alipayobjects.com/zos/rmsportal/WXoqXTHrSnRcUwEaQgXJ.png',
-  }));
+const Recommend = () => {
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    queryRecommend().then(res => {
+      setList(res.list.data);
+    });
+  }, []);
   return (
     <>
       <WingBlank size="lg" className={styles.main}>
@@ -29,24 +30,22 @@ const Recommend: React.FC<RecommendProps> = ({ list }) => {
           <Grid
             data={list.slice(0, 6)}
             columnNum={3}
-            renderItem={node}
-            hasLine={true}
+            renderItem={data => node({ ...data })}
           />
         </Card>
       </WingBlank>
+
       <WingBlank size="lg" className={styles.main2}>
         <Card>
           <Card.Header title="猜你喜欢" />
           <Grid
             data={list.slice(6)}
             columnNum={2}
-            renderItem={node}
-            hasLine={true}
+            renderItem={data => node({ ...data })}
           />
         </Card>
       </WingBlank>
     </>
   );
 };
-
 export default Recommend;

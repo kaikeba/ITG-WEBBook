@@ -1,32 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './index.less';
-import SearchInput from './SearchInput';
-import Carousel from './Carousel';
-import NavTable from './NavTable';
+import SearchInput from './SearchInput/index';
+import Carousel from './Carousel/index';
+import NavTable from './NavTable/index';
 import Arc from '@/components/Arc';
 import Recommend from './Recommend';
-import { Dispatch, HomeModelState, connect } from 'umi';
-import { ConnectState } from '@/models/connect';
 
-interface HomeProps {
-  dispatch: Dispatch;
-  home: HomeModelState;
-}
-
-const Home: React.FC<HomeProps> = ({ dispatch, home }) => {
-  useEffect(() => {
-    // 获取推荐模块
-    dispatch({ type: 'home/queryRecommend' });
-  }, []);
+export default () => {
   return (
     <div className={styles.main}>
       <SearchInput />
       <Carousel />
       <Arc />
       <NavTable />
-      <Recommend list={home.recommend.data} />
+      <Recommend />
     </div>
   );
 };
-
-export default connect(({ home }: ConnectState) => ({ home }))(Home);

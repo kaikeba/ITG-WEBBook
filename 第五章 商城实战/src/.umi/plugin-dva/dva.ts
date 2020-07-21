@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { ApplyPluginsType } from 'umi';
 import dva from 'dva';
 // @ts-ignore
-import createLoading from '/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/node_modules/dva-loading/dist/index.esm.js';
+import createLoading from '/Users/gaoshaoyun/workspace/0/snow-mall/node_modules/dva-loading/dist/index.esm.js';
 import { plugin, history } from '../core/umiExports';
 
 let app:any = null;
@@ -28,13 +28,8 @@ export function _onCreate(options = {}) {
   (runtimeDva.plugins || []).forEach((plugin:any) => {
     app.use(plugin);
   });
-  app.model({ namespace: 'cart', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/cart.ts').default) });
-app.model({ namespace: 'confirmBill', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/confirmBill.ts').default) });
-app.model({ namespace: 'home', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/home.ts').default) });
-app.model({ namespace: 'olist', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/olist.ts').default) });
-app.model({ namespace: 'product', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/product.ts').default) });
-app.model({ namespace: 'search', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/search.ts').default) });
-app.model({ namespace: 'user', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/src/models/user.ts').default) });
+  app.model({ namespace: 'cart', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall/src/models/cart.ts').default) });
+app.model({ namespace: 'user', ...(require('/Users/gaoshaoyun/workspace/0/snow-mall/src/models/user.ts').default) });
   return app;
 }
 

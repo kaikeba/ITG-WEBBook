@@ -3,8 +3,8 @@ import './core/polyfill';
 import '@@/core/devScripts';
 import { plugin } from './core/plugin';
 import { createHistory } from './core/history';
-import { ApplyPluginsType } from '/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/node_modules/@umijs/runtime';
-import { renderClient } from '/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/node_modules/@umijs/renderer-react/dist/index.js';
+import { ApplyPluginsType } from '/Users/gaoshaoyun/workspace/0/snow-mall/node_modules/@umijs/runtime';
+import { renderClient } from '/Users/gaoshaoyun/workspace/0/snow-mall/node_modules/@umijs/renderer-react/dist/index.js';
 
 
 
@@ -31,7 +31,7 @@ export default clientRender();
 
 
     window.g_umi = {
-      version: '3.2.6',
+      version: '3.2.9',
     };
   
 

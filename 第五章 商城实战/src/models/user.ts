@@ -1,17 +1,19 @@
-import { Toast } from 'antd-mobile';
-
-import {
-  queryCurrent,
-  query as queryUsers,
-  queryDetail,
-  fakeAccountLogout,
-} from '@/services/user';
 import { Effect, Reducer } from 'umi';
+import { queryCurrent, queryDetail, fakeAccountLogout } from '@/services/user';
 import { fakeAccountLogin } from '@/services/login';
+import { Toast } from 'antd-mobile';
+import Icon from '@ant-design/icons/lib/components/AntdIcon';
 
-export interface UserDetailModelState {
-  name: string;
+interface CurrentUser {
+  name?: string;
   icon?: string;
+  userid?: string;
+}
+
+interface DetailUser {
+  name: string;
+  icon: string;
+  userid: string;
   email: string;
   phone: string;
   address: string;
@@ -25,69 +27,76 @@ export interface UserDetailModelState {
 }
 
 export interface UserModelState {
-  status?: 0 | 1;
-  name: string;
-  userid: string;
-  detail: UserDetailModelState;
+  currentUser: CurrentUser;
+  detail:
+    | DetailUser
+    | {
+        name: string;
+        icon: string;
+      };
 }
 
 export interface UserModelType {
   namespace: 'user';
   state: UserModelState;
   effects: {
-    queryDetail: Effect;
     fetchCurrent: Effect;
     login: Effect;
+    queryDetail: Effect;
     logout: Effect;
   };
   reducers: {
-    saveCurrentUser: Reducer<UserModelState>;
-    clearCurrentUser: Reducer<UserModelState> | {};
+    saveUser: Reducer<UserModelState>;
+    clearUser: Reducer<UserModelState>;
   };
 }
 
 const UserModel: UserModelType = {
   namespace: 'user',
-  state: { detail: {} },
-  effects: {
-    *queryDetail(_, { call, put }) {
-      const response = yield call(queryDetail);
-      yield put({
-        type: 'saveCurrentUser',
-        payload: { detail: response },
-      });
+  state: {
+    currentUser: {},
+    detail: {
+      name: '',
+      icon: '',
     },
+  },
+  effects: {
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
       yield put({
-        type: 'saveCurrentUser',
-        payload: response,
+        type: 'saveUser',
+        payload: { currentUser: { ...response } },
       });
     },
     *login({ payload }, { call, put }) {
       const response = yield call(fakeAccountLogin, payload);
       if (response.status === 1) {
         yield put({
-          type: 'saveCurrentUser',
-          payload: response,
+          type: 'saveUser',
+          payload: { currentUser: { ...response } },
         });
       } else {
-        Toast.fail(response.msg || '系统开小差，请稍后再试！', 1);
+        Toast.fail(response.msg || '系统开小差，请稍后再试~');
       }
+    },
+    *queryDetail(_, { call, put }) {
+      const response = yield call(queryDetail);
+      yield put({ type: 'saveUser', payload: { detail: { ...response } } });
     },
     *logout(_, { call, put }) {
       const response = yield call(fakeAccountLogout);
       yield put({
-        type: 'clearCurrentUser',
+        type: 'clearUser',
+        payload: { currentUser: {}, detail: { name: '', icon: '' } },
       });
     },
   },
   reducers: {
-    saveCurrentUser(state, action) {
+    saveUser(state, action) {
       return { ...state, ...action.payload };
     },
-    clearCurrentUser(state, action) {
-      return {};
+    clearUser(state, action) {
+      return { ...action.payload };
     },
   },
 };

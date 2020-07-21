@@ -1,5 +1,4 @@
 import React from 'react';
-import { Carousel } from 'antd-mobile';
 import styles from './index.less';
 
 const navArr = [
@@ -72,14 +71,19 @@ export default function NavMall() {
   return (
     <ul className={styles.main}>
       {navArr.map((item, index) => {
-        return <Nav key={'nav' + index} data={item} />;
+        return <Nav key={item.link} {...item} />;
       })}
     </ul>
   );
 }
 
-function Nav(props) {
-  const { icon, title, link } = props.data;
+interface NavProps {
+  icon: string;
+  title: string;
+  link: string;
+}
+
+function Nav({ icon, title, link }: NavProps) {
   return (
     <li className={styles.nav}>
       <a href={link}>

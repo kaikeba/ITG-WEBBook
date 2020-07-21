@@ -1,39 +1,35 @@
-import React, { useMemo } from 'react';
-import { Card, Checkbox } from 'antd-mobile';
+import React, { useCallback } from 'react';
+import { Card, Checkbox, Button } from 'antd-mobile';
 import classnames from 'classnames';
 import styles from './index.less';
-import { Link } from 'umi';
-import { ProductListType } from 'types/Product';
+import { CartProductType } from '@/@types/product';
 
 const CheckboxItem = Checkbox.CheckboxItem;
 
-interface IndexProps {
-  list: ProductListType;
-  totalPrice: number;
-  count: number;
-  checkedAll: boolean;
-  onChange: Function;
+interface PayBarProps {
+  data: CartProductType[];
+  checkedAllChange: (allChecked: boolean) => void;
+  goPay: () => void;
 }
 
-const PayBar: React.FC<IndexProps> = ({
-  list,
-  totalPrice,
-  count,
-  checkedAll,
-  onChange,
-}) => {
-  const getCheckedList = useMemo(() => {
-    let newList: ProductListType = { data: [] };
-    for (let i = 0; i < list.data.length; i++) {
-      list.data[i].checked && newList.data.push(list.data[i]);
+const PayBar: React.FC<PayBarProps> = ({ data, checkedAllChange, goPay }) => {
+  let checkedAll = data.length > 0,
+    totalPrice = 0,
+    allCount = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    let item = data[i];
+    checkedAll = checkedAll && item.checked;
+    if (item.checked) {
+      totalPrice += item.count * item.price;
+      allCount += item.count;
     }
-    return newList;
-  }, [list.data]);
+  }
 
   return (
     <Card full className={styles.main}>
       <CheckboxItem
-        onChange={({ target }) => onChange({ ...target })}
+        onChange={() => checkedAllChange(!checkedAll)}
         checked={checkedAll}
       >
         全选
@@ -41,16 +37,14 @@ const PayBar: React.FC<IndexProps> = ({
       <span>
         合计: ￥ <span>{totalPrice.toFixed(2)}</span>
       </span>
-      <Link
+      <Button
         type="primary"
-        className={classnames(styles.btn, !count && 'hidden')}
-        to={{
-          pathname: '/confirmBill',
-          state: { totalPrice, count, list: getCheckedList },
-        }}
+        disabled={totalPrice <= 0}
+        className={classnames(styles.btn)}
+        onClick={goPay}
       >
-        去结算(<span>{count}</span>)
-      </Link>
+        去结算(<span>{allCount}</span>)
+      </Button>
     </Card>
   );
 };

@@ -1,46 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { ConnectProps, connect, Dispatch, ConfirmBillModelState } from 'umi';
-import { ConnectState } from '@/models/connect';
-import ReceivingInfo from './ReceivingInfo';
-import List from './List';
+import React, { Component } from 'react';
+import { WingBlank, WhiteSpace, Toast } from 'antd-mobile';
+import ReceivingInfo, { ReceivingInfoType } from './ReceivingInfo';
+import { getDefaultReceivingInfo } from '@/services/confirmBill';
+import { connect, history } from 'umi';
+import { ConnectState, ConnectProps, CartModelState } from '@/models/connect';
+import ListNode from './ListNode';
 import PayBar from './PayBar';
-import { WingBlank, WhiteSpace } from 'antd-mobile';
 
-export interface ConfirmBillProps
-  extends ConfirmBillModelState,
-    ConnectProps,
-    ConnectState {
-  dispatch: Dispatch;
+export interface ConfirmBillProps extends ConnectProps {
+  cart: CartModelState;
 }
 
-const ConfirmBill: React.FC<ConfirmBillProps> = ({
-  dispatch,
-  confirmBill,
-  location,
-}) => {
-  const { receivingInfo } = confirmBill;
+export interface ConfirmBillState {
+  receivingInfo: ReceivingInfoType;
+}
 
-  useEffect(() => {
-    // 获取用户默认收货地址
-    dispatch({
-      type: 'confirmBill/getDefaultReceivingInfo',
+class ConfirmBill extends Component<ConfirmBillProps, ConfirmBillState> {
+  state: ConfirmBillState = {
+    receivingInfo: {
+      name: '',
+      tel: '',
+      address: '',
+    },
+  };
+  componentDidMount() {
+    const { data } = this.props.cart;
+    if (data.length === 0) {
+      Toast.info('请重新进入确认订单页面！');
+      history.go(-1);
+    } else {
+      getDefaultReceivingInfo().then(res => {
+        this.setState({ receivingInfo: { ...res } });
+      });
+    }
+  }
+  render() {
+    const { receivingInfo } = this.state;
+    const { data } = this.props.cart;
+    let totalPrice = 0,
+      allCount = 0;
+    const getList = data.map(item => {
+      if (item.checked) {
+        totalPrice += item.price * item.count;
+        allCount += item.count;
+      }
+      return <ListNode key={item.id} {...item} />;
     });
-  }, []);
+    return (
+      <WingBlank size="lg">
+        <WhiteSpace size="lg" />
+        <ReceivingInfo {...receivingInfo} />
+        <WhiteSpace size="lg" />
+        <div>{getList}</div>
+        <PayBar totalPrice={totalPrice} count={allCount} />
+      </WingBlank>
+    );
+  }
+}
 
-  const newList = location.state || { list: { data: [] } };
-
-  return (
-    <WingBlank size="lg">
-      <WhiteSpace size="lg" />
-      <ReceivingInfo {...receivingInfo} />
-      <WhiteSpace size="lg" />
-      <List {...newList} />
-      <PayBar {...newList} />
-      <WhiteSpace size="lg" />
-    </WingBlank>
-  );
-};
-
-export default connect(({ confirmBill }: ConnectState) => ({
-  confirmBill,
-}))(ConfirmBill);
+export default connect(({ cart }: ConnectState) => ({ cart }))(ConfirmBill);

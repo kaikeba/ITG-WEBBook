@@ -2,27 +2,58 @@ import React from 'react';
 import { Card, Checkbox, Stepper } from 'antd-mobile';
 import classnames from 'classnames';
 import styles from './index.less';
-import { ProductListType, ProductType } from 'types/Product';
+import { CartProductType } from '@/@types/product';
+
+export interface UpdateProductType {
+  id: string;
+  index: number;
+  count?: number;
+  checked?: boolean;
+}
+
+interface ListProps {
+  data: CartProductType[];
+  updateProduct: (newState: UpdateProductType) => void;
+}
+
+const List: React.FC<ListProps> = ({ data, updateProduct }) => {
+  return (
+    <Card full className={styles.main}>
+      {data.length === 0 ? (
+        <div className="txtCenter">购物车为空，快去选购吧！</div>
+      ) : (
+        data.map((item: CartProductType, index: number) => (
+          <Node
+            key={item.id}
+            index={index}
+            {...item}
+            updateProduct={updateProduct}
+          />
+        ))
+      )}
+    </Card>
+  );
+};
 
 const CheckboxItem = Checkbox.CheckboxItem;
 
-interface NodeProps extends ProductType {
-  key: string;
-  onChange: Function;
-}
-
-const Node: React.FC<NodeProps> = ({
+const Node = ({
   id,
   title,
   img,
   price,
   count,
   checked,
-  onChange,
+  index,
+  updateProduct,
+}: CartProductType & {
+  updateProduct: (newState: UpdateProductType) => void;
+
+  index: number;
 }) => {
   return (
     <CheckboxItem
-      onChange={() => onChange({ id, checked: !checked })}
+      onChange={() => updateProduct({ id, index, checked: !checked })}
       checked={checked}
     >
       <div className={styles.node}>
@@ -39,27 +70,12 @@ const Node: React.FC<NodeProps> = ({
               max={999}
               min={0}
               value={count}
-              onChange={(count: number) => onChange({ id, count })}
+              onChange={(count: number) => updateProduct({ id, index, count })}
             />
           </div>
         </div>
       </div>
     </CheckboxItem>
-  );
-};
-
-interface IndexProps {
-  onChange: Function;
-  list: ProductListType;
-}
-
-const List: React.FC<IndexProps> = ({ onChange, list = { data: [] } }) => {
-  return (
-    <Card full className={styles.main}>
-      {list.data.map((item: ProductType) => (
-        <Node key={item.id} {...item} onChange={onChange} />
-      ))}
-    </Card>
   );
 };
 

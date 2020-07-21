@@ -1,33 +1,17 @@
-import { HomeModelState } from './home';
-import { ConfirmBillModelState } from './confirmBill';
-import { CartModelState } from './cart';
-import { SearchModelState } from './search';
+// model state 类型
 import { UserModelState } from './user';
-import { ProductModelState, OListModelState } from 'umi';
+import { Location, Dispatch } from 'umi';
+import { CartModelState } from './cart';
 
-export interface Loading {
-  global: boolean;
-  effects: { [key: string]: boolean | undefined };
-  models: {
-    global?: boolean;
-    menu?: boolean;
-    setting?: boolean;
-    user?: boolean;
-    login?: boolean;
-  };
+export interface ConnectProps {
+  location: Location & { state: { from: string } };
+  dispatch: Dispatch;
 }
 
 export interface ConnectState {
-  loading: Loading;
-  home: HomeModelState;
   user: UserModelState;
-  search: SearchModelState;
   cart: CartModelState;
-  product: ProductModelState;
-  confirmBill: ConfirmBillModelState;
-  olist: OListModelState;
 }
 
-export interface Route {
-  routes?: Route[];
-}
+export { UserModelState };
+export { CartModelState };

@@ -1,17 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { WingBlank, Card, Button } from 'antd-mobile';
+import React, { useState } from 'react';
+import { Card, Button } from 'antd-mobile';
 import classnames from 'classnames';
 import styles from './index.less';
 import PayModal from '@/components/PayModal';
 
-interface IndexProps {
+interface PayBarProps {
   totalPrice?: number;
   count?: number;
 }
 
-const PayBar: React.FC<IndexProps> = ({ totalPrice, count }) => {
-  const [showPay, setShowPay] = useState(false);
-  const onOpenChange = (): void => {
+const PayBar: React.FC<PayBarProps> = ({ totalPrice, count }) => {
+  const [showPay, setShowPay] = useState<boolean>(false);
+  const onOpenChange = () => {
     setShowPay(!showPay);
   };
   return (

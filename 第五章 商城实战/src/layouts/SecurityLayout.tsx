@@ -1,19 +1,27 @@
 import React, { ReactElement } from 'react';
-import { Redirect, connect, UserModelState, ConnectProps } from 'umi';
-import { ConnectState } from '@/models/connect';
+import { connect, Redirect } from 'umi';
+import { ConnectState, ConnectProps, UserModelState } from '@/models/connect';
 
 interface SecurityLayoutProps extends ConnectProps {
   user: UserModelState;
   children: ReactElement;
 }
 
-const SecurityLayout: React.FC<SecurityLayoutProps> = ({ children, user }) => {
-  const { userid } = user;
-  const isLogin = userid !== null && userid !== undefined && userid !== '';
+const SecurityLayout: React.FC<SecurityLayoutProps> = ({
+  user,
+  children,
+  location,
+}) => {
+  const { userid } = user.currentUser;
+  const isLogin = !!userid;
   if (!isLogin) {
-    return <Redirect to="login" />;
+    // 没有登录 去登录页
+    return (
+      <Redirect
+        to={{ pathname: '/login', state: { from: location.pathname } }}
+      />
+    );
   }
-
   return children;
 };
 

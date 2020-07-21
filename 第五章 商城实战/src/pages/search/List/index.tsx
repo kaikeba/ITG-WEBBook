@@ -1,11 +1,73 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { Link } from 'umi';
-import { Card, Icon, ListView, WingBlank } from 'antd-mobile';
+import { ProductType } from '@/@types/product';
+import { Card, ListView, WingBlank, Icon } from 'antd-mobile';
 import styles from './index.less';
-import { ProductListWithNumType, ProductType } from 'types/Product';
+import { Link } from 'umi';
 import classnames from 'classnames';
 import Tags from '@/components/Tags';
+import { PaginationType } from '@/@types/list';
+
+interface ListProps {
+  data: ProductType[];
+  pagination: PaginationType;
+  queryList: Function;
+}
+interface ListState {
+  dataSource: any;
+}
+
+export default class List extends Component<ListProps, ListState> {
+  state: ListState = {
+    dataSource: new ListView.DataSource({
+      rowHasChanged: (r1: any, r2: any) => r1 !== r2,
+    }),
+  };
+
+  onEndReached = () => {
+    const { pagination } = this.props;
+    if (pagination.pageNo < pagination.totalPage - 1) {
+      this.props.queryList({
+        pageNo: pagination.pageNo + 1,
+      });
+    }
+  };
+
+  componentDidMount() {
+    console.log('queryList', this.props); //sy-log
+    this.props.queryList();
+  }
+
+  render() {
+    const { dataSource } = this.state;
+    const { data, pagination } = this.props;
+    return (
+      <Card full className={styles.main}>
+        {data.length > 0 ? (
+          <ListView
+            dataSource={dataSource.cloneWithRows(data)}
+            renderRow={item => Node(item)}
+            pageSize={pagination.pageSize}
+            initialListSize={pagination.pageSize}
+            onEndReached={this.onEndReached}
+            useBodyScroll={true}
+            renderFooter={() => (
+              <div className="txtCenter">
+                {pagination.pageNo < pagination.totalPage - 1 ? (
+                  <Icon type="loading" />
+                ) : (
+                  <div>加载完毕</div>
+                )}
+              </div>
+            )}
+            onEndReachedThreshold={10}
+          />
+        ) : (
+          <div className="txtCenter font14">暂无数据</div>
+        )}
+      </Card>
+    );
+  }
+}
 
 function Node({ img, title, price, tags, id }: ProductType) {
   return (
@@ -23,73 +85,4 @@ function Node({ img, title, price, tags, id }: ProductType) {
       </WingBlank>
     </Link>
   );
-}
-
-interface ListProps {
-  list: ProductListWithNumType;
-  query: Function;
-}
-
-interface ListState {
-  dataSource: any;
-}
-
-export default class List extends React.Component<ListProps, ListState> {
-  constructor(props: ListProps) {
-    super(props);
-    this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (r1: any, r2: any) => r1 !== r2,
-      }),
-    };
-  }
-
-  componentDidMount() {
-    this.props.query({ pageNo: 0 });
-  }
-
-  //下拉刷新
-  onEndReached = () => {
-    const { pageNo, totalPage, searchKey, data } = this.props.list;
-    if (data.length < totalPage) {
-      this.props.query({ pageNo: pageNo + 1, searchKey });
-    }
-  };
-
-  //获取item进行展示
-  renderRow = (item: ProductType) => {
-    return <Node {...item} />;
-  };
-  render() {
-    const { dataSource } = this.state;
-    const { list } = this.props;
-    const { data, totalPage } = list;
-    return (
-      <Card full className={styles.main}>
-        {data.length ? (
-          <ListView
-            dataSource={dataSource.cloneWithRows(data)}
-            renderRow={this.renderRow}
-            initialListSize={10}
-            pageSize={10}
-            renderFooter={() => (
-              <div className="txtCenter">
-                {data.length < totalPage ? (
-                  <Icon type="loading" />
-                ) : (
-                  <div>加载完毕</div>
-                )}
-              </div>
-            )}
-            onEndReached={this.onEndReached}
-            onEndReachedThreshold={10}
-            useBodyScroll={true}
-            style={{ width: '100vw' }}
-          />
-        ) : (
-          <div className="txtCenter font14">暂无数据</div>
-        )}
-      </Card>
-    );
-  }
 }

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ApplyPluginsType } from '/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/node_modules/@umijs/runtime';
+import { ApplyPluginsType } from '/Users/gaoshaoyun/workspace/0/snow-mall/node_modules/@umijs/runtime';
 import { plugin } from './plugin';
 
 const routes = [
@@ -9,22 +9,17 @@ const routes = [
     "routes": [
       {
         "path": "/",
-        "exact": true,
-        "component": require('@/pages/home').default
-      },
-      {
-        "path": "/home",
-        "component": require('@/pages/home').default,
+        "component": require('@/pages/home/index').default,
         "exact": true
       },
       {
         "path": "/login",
-        "component": require('@/pages/login').default,
+        "component": require('@/pages/login/index').default,
         "exact": true
       },
       {
         "path": "/search",
-        "component": require('@/pages/search').default,
+        "component": require('@/pages/search/index').default,
         "exact": true
       },
       {
@@ -37,18 +32,18 @@ const routes = [
         "component": require('@/layouts/SecurityLayout').default,
         "routes": [
           {
-            "path": "/user",
-            "component": require('@/pages/user').default,
+            "path": "/cart",
+            "component": require('@/pages/cart/index').default,
             "exact": true
           },
           {
             "path": "/olist",
-            "component": require('@/pages/olist').default,
+            "component": require('@/pages/olist/index').default,
             "exact": true
           },
           {
-            "path": "/cart",
-            "component": require('@/pages/cart').default,
+            "path": "/user",
+            "component": require('@/pages/user/index').default,
             "exact": true
           },
           {

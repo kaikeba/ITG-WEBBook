@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { UserDetailModelState } from 'umi';
+import React from 'react';
 import classnames from 'classnames';
 import styles from './index.less';
 import { Card, Flex } from 'antd-mobile';
@@ -28,7 +27,12 @@ const personal = [
   },
 ];
 
-const Header: React.FC<UserDetailModelState> = ({ name, icon }) => {
+interface HeaderProps {
+  name: string;
+  icon: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ name, icon }) => {
   return (
     <div className={styles.main}>
       <Card full className={styles.header}>

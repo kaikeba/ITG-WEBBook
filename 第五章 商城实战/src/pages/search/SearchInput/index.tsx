@@ -1,45 +1,57 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { history } from 'umi';
-import { Card, Button, InputItem } from 'antd-mobile';
-import classnames from 'classnames';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import styles from './index.less';
+import { InputItem, Button } from 'antd-mobile';
+import { history } from 'umi';
 
-export default function SearchInput({ query }: { query: Function }) {
-  const searchbar = useRef(null);
-  const [showSearch, setShowSearch] = useState(false);
-  const [input, setInput] = useState('');
+interface SearchInputProps {
+  queryList: Function;
+}
+const SearchInput: React.FC<SearchInputProps> = props => {
+  const inputRef = useRef<any>(null);
   useEffect(() => {
-    searchbar.current.focus();
+    inputRef.current.focus();
   }, []);
-  const goHome = () => {
-    if (input) {
-      query({ pageNo: 0, searchKey: input });
+
+  const [input, setInput] = useState<string>('');
+
+  const inputChange = useCallback((val: string) => {
+    setInput(val);
+  }, []);
+
+  const [searchMode, setSearchMode] = useState<boolean>(false);
+  const handle = useCallback(() => {
+    if (searchMode) {
+      // 搜索
+      const val = input.trim();
+      console.log('搜索', val); //sy-log
+      props.queryList({ searchKey: val, pageNo: 0 });
     } else {
       history.push('/');
     }
-  };
+  }, [searchMode, input]);
 
-  const onChange = val => {
-    setInput(val);
-  };
-
+  useEffect(() => {
+    const val = input.trim();
+    setSearchMode(val !== '');
+  }, [input]);
   return (
-    <Card full className={styles.main}>
-      <Button className={styles.btn} onClick={goHome}>
-        宝贝
-      </Button>
+    <div className={styles.main}>
       <InputItem
-        ref={searchbar}
-        className={classnames(styles.searchBar)}
-        // placeholder="寻找宝贝"
-        clear
-        maxLength={100}
+        ref={inputRef}
         value={input}
-        onChange={onChange}
+        onChange={inputChange}
+        clear
+        className={styles.searchBar}
       />
-      <Button className={styles.btn} onClick={goHome}>
-        {input ? '搜索' : '取消'}
+      <Button
+        type="primary"
+        onClick={handle}
+        className={styles.btn}
+        disabled={false}
+      >
+        {searchMode ? '搜索' : '取消'}
       </Button>
-    </Card>
+    </div>
   );
-}
+};
+export default SearchInput;

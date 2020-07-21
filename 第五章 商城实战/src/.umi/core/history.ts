@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { createBrowserHistory } from '/Users/gaoshaoyun/workspace/0/snow-mall-for-master/snow-mall/node_modules/@umijs/runtime';
+import { createBrowserHistory } from '/Users/gaoshaoyun/workspace/0/snow-mall/node_modules/@umijs/runtime';
 
 let options = {
   "basename": "/"

@@ -1,39 +1,51 @@
-import React from 'react';
-import { history, Link } from 'umi';
+import React, { useCallback } from 'react';
+import { Link } from 'umi';
 import classnames from 'classnames';
 import styles from './index.less';
-import { ProductType } from 'types/Product';
+import { ProductType } from '@/@types/product';
+import { Toast } from 'antd-mobile';
+import { connect, history } from 'umi';
+import { ConnectState, ConnectProps, CartModelState } from '@/models/connect';
+import { editCart } from '@/services/editCart';
 
-const CartAndBuy: React.FC<ProductType> = product => {
+interface CartAndBuyProps extends ConnectProps {
+  product: ProductType;
+  cart: CartModelState;
+}
+
+const CartAndBuy: React.FC<CartAndBuyProps> = ({ product, dispatch }) => {
+  const addToCart = useCallback(() => {
+    editCart({ id: product.id, increment: 1 }).then(res => {
+      Toast.success(product.title + '已加入购物车！');
+    });
+  }, [product]);
+
+  const goPay = useCallback(() => {
+    dispatch({
+      type: 'cart/saveCart',
+      payload: {
+        data: [{ ...product, count: 1, checked: true, img: product.imgs[0] }],
+      },
+    });
+    history.push('/confirmBill');
+  }, [product]);
   return (
     <div className={styles.main}>
-      <div className={classnames(styles.cart)}>
-        <Link to="/cart">
-          <span className="iconfont icon-3"></span>
-          <p className={styles.title}>购物车</p>
-        </Link>
-      </div>
+      <Link to="/cart" className={classnames(styles.cart)}>
+        <span className="iconfont icon-3 font16"></span>
+        <p className={styles.title}>购物车</p>
+      </Link>
       <div
         className={classnames(styles.addCart, styles.btn)}
-        onClick={() => history.push('/cart')}
+        onClick={addToCart}
       >
         加入购物车
       </div>
-      <Link
-        className={classnames(styles.buyNow, styles.btn)}
-        to={{
-          pathname: '/confirmBill',
-          state: {
-            totalPrice: product.price,
-            count: 1,
-            list: { data: [product] },
-          },
-        }}
-      >
+      <div className={classnames(styles.buyNow, styles.btn)} onClick={goPay}>
         立即购买
-      </Link>
+      </div>
     </div>
   );
 };
 
-export default CartAndBuy;
+export default connect(({ cart }: ConnectState) => ({ cart }))(CartAndBuy);

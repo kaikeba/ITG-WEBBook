@@ -4,7 +4,7 @@ export interface QueryItem {
   id: string;
 }
 
-export async function query(params: LoginParamsType) {
+export async function query(params: QueryItem) {
   return request('/api/product', {
     method: 'POST',
     data: params,

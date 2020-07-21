@@ -1,37 +1,30 @@
 import React, { useEffect } from 'react';
-import { connect, Dispatch, UserModelState } from 'umi';
-import { ConnectState } from '@/models/connect';
-import styles from './index.less';
-import Header from './Header';
+import { connect, UserModelState } from 'umi';
+import { ConnectState, ConnectProps } from '@/models/connect';
+import Header from './Header/';
 import MyList from './MyList';
-import Logout from './Logout';
+import Logout from './Logout/index';
 
-interface UserProps {
-  dispatch: Dispatch;
+interface UserProps extends ConnectProps {
   user: UserModelState;
 }
 
 const User: React.FC<UserProps> = ({ dispatch, user }) => {
   useEffect(() => {
+    // dispatch
+
     dispatch({ type: 'user/queryDetail' });
   }, []);
-  const { detail } = user;
-
+  const { name, icon } = user.detail;
   const logout = () => {
-    dispatch({
-      type: 'user/logout',
-    });
+    dispatch({ type: 'user/logout' });
   };
-
   return (
-    <div className={styles.main}>
-      <Header {...detail} />
+    <div>
+      <Header name={name} icon={icon} />
       <MyList />
       <Logout logout={logout} />
     </div>
   );
 };
-
-export default connect(({ user }: ConnectState) => ({
-  user,
-}))(User);
+export default connect(({ user }: ConnectState) => ({ user }))(User);

@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
-import { connect, Dispatch, Location, UserModelState, Redirect } from 'umi';
+import { connect } from 'umi';
+import { ConnectState, ConnectProps, UserModelState } from '@/models/connect';
+import BottomNav from '@/components/BottomNav';
+import '@/static/iconfont/iconfont.css';
 import styles from './BasicLayout.less';
-import BottomNav from '@/components/BottomMenu';
-import { ConnectState } from '@/models/connect';
-import '../static/iconfont/iconfont.css';
 
-interface BasicLayoutProps {
-  dispatch: Dispatch;
-  location: Location;
+interface BasicLayoutProps extends ConnectProps {
   user: UserModelState;
 }
 
 const BasicLayout: React.FC<BasicLayoutProps> = props => {
-  const { dispatch, children, location, user } = props;
+  const { children, location, dispatch, user } = props;
 
   useEffect(() => {
+    // 获取用户基本信息
     if (dispatch) {
       dispatch({
         type: 'user/fetchCurrent',
@@ -22,19 +21,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
     }
   }, []);
 
-  const { userid } = user;
-  const isLogin = userid !== null && userid !== undefined && userid !== '';
   const { pathname } = location;
-
-  if (!isLogin && pathname !== '/login') {
-    return (
-      <Redirect to={{ pathname: '/login', state: { redirect: pathname } }} />
-    );
-  }
-
-  const showBottomNav =
-    pathname !== '/login' && pathname.indexOf('/product/') === -1;
-
+  const showBottomNav = pathname !== '/login';
   return (
     <div className={styles.main}>
       <article>{children}</article>

@@ -2,14 +2,23 @@ import React from 'react';
 import { Card, WhiteSpace } from 'antd-mobile';
 import classnames from 'classnames';
 import styles from './index.less';
-import { ProductListType, ProductType } from 'types/Product';
+import { CartProductType } from '@/@types/product';
 
-interface NodeProps extends ProductType {
-  key: string;
-  last: boolean;
+interface ListProps {
+  data: CartProductType[];
 }
 
-const Node: React.FC<NodeProps> = ({ id, title, img, price, count, last }) => {
+const List: React.FC<ListProps> = ({ data }) => {
+  return (
+    <div className={styles.main}>
+      {data.map(item => (
+        <Node key={item.id} {...item} />
+      ))}
+    </div>
+  );
+};
+
+const Node: React.FC<CartProductType> = ({ id, title, img, price, count }) => {
   return (
     <>
       <Card className={styles.node}>
@@ -24,22 +33,8 @@ const Node: React.FC<NodeProps> = ({ id, title, img, price, count, last }) => {
           </div>
         </div>
       </Card>
-      {!last && <WhiteSpace size="lg" />}
+      <WhiteSpace size="lg" />
     </>
-  );
-};
-
-interface IndexProps {
-  list: ProductListType;
-}
-
-const List: React.FC<IndexProps> = ({ list = { data: [] } }) => {
-  return (
-    <div className={styles.main}>
-      {list.data.map((item, index) => (
-        <Node key={item.id} {...item} last={index === list.data.length - 1} />
-      ))}
-    </div>
   );
 };
 

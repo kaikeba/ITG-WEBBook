@@ -1,34 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { ConnectProps, connect, Dispatch, OListModelState } from 'umi';
-import { ConnectState } from '@/models/connect';
-import styles from './index.less';
-import List from './List';
+import React, { Component } from 'react';
 import { WingBlank, WhiteSpace } from 'antd-mobile';
+import { query } from '@/services/olist';
+import { CartProductType } from '@/@types/product';
+import List from './List/index';
 
-export interface OListProps
-  extends OListModelState,
-    ConnectProps,
-    ConnectState {
-  dispatch: Dispatch;
+export interface OListState {
+  data: CartProductType[];
 }
 
-const OList: React.FC<OListProps> = ({ dispatch, olist }) => {
-  useEffect(() => {
-    // 获取订单列表
-    dispatch({
-      type: 'olist/query',
+class OList extends Component<{}, OListState> {
+  state: OListState = {
+    data: [],
+  };
+  componentDidMount() {
+    query().then(res => {
+      this.setState({ data: res.list.data });
     });
-  }, []);
+  }
+  render() {
+    const { data } = this.state;
+    return (
+      <WingBlank size="lg">
+        <WhiteSpace size="lg" />
+        <List data={data} />
+      </WingBlank>
+    );
+  }
+}
 
-  return (
-    <WingBlank className={styles.main}>
-      <WhiteSpace size="lg" />
-      <List {...olist} />
-      <WhiteSpace size="lg" />
-    </WingBlank>
-  );
-};
-
-export default connect(({ olist }: ConnectState) => ({
-  olist,
-}))(OList);
+export default OList;

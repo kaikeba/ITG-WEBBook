@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 import styles from './index.less';
-import { ReceivingInfoState } from 'umi';
 import { Card } from 'antd-mobile';
 
-const ReceivingInfo: React.FC<ReceivingInfoState> = ({
-  name,
-  tel,
-  address,
-}) => {
+export interface ReceivingInfoType {
+  name: string;
+  tel: string;
+  address: string;
+}
+const ReceivingInfo: React.FC<ReceivingInfoType> = ({ name, tel, address }) => {
   return (
     <Card className={styles.main}>
       <i
